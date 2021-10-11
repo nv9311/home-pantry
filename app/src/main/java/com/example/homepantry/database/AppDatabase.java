@@ -7,20 +7,30 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {Item.class}, version = 1)
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Database(entities = {Item.class}, version = 2)
 @TypeConverters(com.example.homepantry.database.TypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ItemDao itemDao();
     private static volatile AppDatabase INSTANCE;
+    static final ExecutorService databaseWriteExecutor =
+            Executors.newSingleThreadExecutor();
+
     public static AppDatabase getDatabase(Context context){
-     if(INSTANCE == null) {
-         synchronized (AppDatabase.class) {
-             if (INSTANCE == null) {
-                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                         AppDatabase.class, "item_database").build();
+         if(INSTANCE == null) {
+             synchronized (AppDatabase.class) {
+                 if (INSTANCE == null) {
+                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
+                             AppDatabase.class, "item_database").build();
+                 }
              }
          }
-     }
-     return INSTANCE;
-}
+         return INSTANCE;
+    }
+    public static ExecutorService getExecutorsService(){
+        return databaseWriteExecutor;
+    }
+
 }
