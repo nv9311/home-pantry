@@ -1,5 +1,6 @@
 package com.example.homepantry;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +9,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.homepantry.database.Item;
+
+import java.util.Date;
+import java.util.List;
+
 public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.ItemViewHolder> {
 
-    private String[] localDataSet;
+    private List<Item> pantryItems;
+    Context context;
 
-    public PantryListAdapter(String[] dataSet){
-        localDataSet = dataSet;
+    public PantryListAdapter(Context context){
+        this.context = context;
     }
 
     @NonNull
@@ -26,13 +33,21 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
-        String text = localDataSet[position];
-        holder.getTextView().setText(text);
+        String text = pantryItems.get(position).itemName;
+        String manufacturer = pantryItems.get(position).manufacturer;
+        Date date  = pantryItems.get(position).expirationDate;
+        holder.getTextView().setText(text + " " + manufacturer + " " + date);
     }
 
     @Override
     public int getItemCount() {
-        return localDataSet.length;
+        if(pantryItems == null) return 0;
+        else return pantryItems.size();
+    }
+
+    public void swapItems(List<Item> items){
+        pantryItems = items;
+
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder{
         private TextView item;
