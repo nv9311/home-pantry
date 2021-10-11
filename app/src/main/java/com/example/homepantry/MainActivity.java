@@ -1,7 +1,10 @@
 package com.example.homepantry;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,9 +17,7 @@ import com.example.homepantry.database.Item;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,18 +56,16 @@ public class MainActivity extends AppCompatActivity {
         items.setHasFixedSize(true);
         items.setAdapter(pantryAdapter);
 
-        executor.execute(new Runnable() {
+        ItemViewModel model = new ViewModelProvider(this).get(ItemViewModel.class);
+        final Observer<List<Item>> itemsObserver = new Observer<List<Item>>() {
             @Override
-            public void run() {
-                List<Item> items = db.itemDao().getAll();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pantryAdapter.swapItems(items);
-                        pantryAdapter.notifyDataSetChanged();
-                    }
-                });
+            public void onChanged(@Nullable final List<Item> items) {
+                // Update the UI
+                pantryAdapter.swapItems(items);
+                pantryAdapter.notifyDataSetChanged();
             }
-        });
+        };
+        model.getItems().observe(this, itemsObserver);
+
     }
 }
