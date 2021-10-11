@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity(tableName = "item")
 public class Item {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int itemId;
 
     @ColumnInfo(name = "item_name")
