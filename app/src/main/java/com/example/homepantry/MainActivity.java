@@ -35,23 +35,6 @@ public class MainActivity extends AppCompatActivity{
 
         items = findViewById(R.id.recycler_view_items);
 
-        ExecutorService executor = AppDatabase.getExecutorsService();
-        db = AppDatabase.getDatabase(MainActivity.this);
-
-        executor.execute(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
-                Item item = new Item();
-                item.dateAdded = LocalDateTime.now();
-                item.itemName = "Test item 5";
-                item.manufacturer = "Zelene doline";
-                item.expirationDate = new Date();
-                db.itemDao().insert(item);
-            }
-        });
-
-
         pantryAdapter = new PantryListAdapter(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
