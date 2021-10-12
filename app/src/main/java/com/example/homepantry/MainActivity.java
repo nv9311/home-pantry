@@ -8,18 +8,21 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private RecyclerView items;
     PantryListAdapter pantryAdapter;
@@ -67,5 +70,15 @@ public class MainActivity extends AppCompatActivity {
         };
         model.getItems().observe(this, itemsObserver);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent addItemActivity = new Intent(MainActivity.this, AddItemActivity.class);
+                startActivity(addItemActivity);
+            }
+        });
     }
+
+
 }
