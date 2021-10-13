@@ -10,7 +10,7 @@ import java.util.List;
 
 @Dao
 public interface ItemDao {
-    @Query("SELECT * FROM items")
+    @Query("SELECT * FROM items ORDER BY expiration_date")
     LiveData<List<Item>> getAll();
 
     @Delete

@@ -1,16 +1,20 @@
 package com.example.homepantry;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homepantry.database.Item;
+import com.example.homepantry.utilities.DateUtils;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -31,13 +35,15 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
         return new ItemViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
         Item item = pantryItems.get(position);
         String text = item.itemName;
         String manufacturer = item.manufacturer;
         Date date  = item.expirationDate;
-        holder.item.setText(text + " " + manufacturer + " " + date);
+        long days = DateUtils.daysTillExpiration(context, date);
+        holder.item.setText(text + " " + manufacturer + " " + days);
         holder.itemView.setTag(item.itemId);
     }
 
