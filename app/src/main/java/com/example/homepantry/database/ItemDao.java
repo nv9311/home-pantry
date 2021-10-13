@@ -10,7 +10,7 @@ import java.util.List;
 
 @Dao
 public interface ItemDao {
-    @Query("SELECT * FROM item")
+    @Query("SELECT * FROM items")
     LiveData<List<Item>> getAll();
 
     @Delete

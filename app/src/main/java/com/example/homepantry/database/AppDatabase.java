@@ -10,7 +10,7 @@ import androidx.room.TypeConverters;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Item.class}, version = 2)
+@Database(entities = {Item.class}, version = 3)
 @TypeConverters(com.example.homepantry.database.TypeConverters.class)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ItemDao itemDao();

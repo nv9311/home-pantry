@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Entity(tableName = "item")
+@Entity(tableName = "items")
 public class Item {
     @PrimaryKey(autoGenerate = true)
     public int itemId;
