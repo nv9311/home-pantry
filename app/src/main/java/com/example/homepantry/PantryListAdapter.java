@@ -33,10 +33,12 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
-        String text = pantryItems.get(position).itemName;
-        String manufacturer = pantryItems.get(position).manufacturer;
-        Date date  = pantryItems.get(position).expirationDate;
-        holder.getTextView().setText(text + " " + manufacturer + " " + date);
+        Item item = pantryItems.get(position);
+        String text = item.itemName;
+        String manufacturer = item.manufacturer;
+        Date date  = item.expirationDate;
+        holder.item.setText(text + " " + manufacturer + " " + date);
+        holder.itemView.setTag(item.itemId);
     }
 
     @Override

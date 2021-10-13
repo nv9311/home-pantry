@@ -16,6 +16,9 @@ public interface ItemDao {
     @Delete
     void delete(Item item);
 
+    @Query("DELETE FROM items WHERE itemId = :id")
+    void deleteItem(int id);
+
     @Insert
     void insertAll(Item... items);
 
