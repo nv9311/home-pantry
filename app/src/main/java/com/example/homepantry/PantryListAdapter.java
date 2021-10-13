@@ -1,6 +1,7 @@
 package com.example.homepantry;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,11 +40,17 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
         Item item = pantryItems.get(position);
-        String text = item.itemName;
-        String manufacturer = item.manufacturer;
+        String name = item.itemName;
         Date date  = item.expirationDate;
         long days = DateUtils.daysTillExpiration(context, date);
-        holder.item.setText(text + " " + manufacturer + " " + days);
+        holder.itemName.setText(name);
+        holder.daysTillExpiration.setText("Potek uporabe: " + days + " dni");
+        if(days < 1) {
+            holder.daysTillExpiration.setTextColor(Color.RED);
+        }
+        else{
+            holder.daysTillExpiration.setTextColor(Color.BLACK);
+        }
         holder.itemView.setTag(item.itemId);
     }
 
@@ -58,14 +65,19 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
     }
     public static class ItemViewHolder extends RecyclerView.ViewHolder{
-        private TextView item;
+        private final TextView itemName;
+        private final TextView daysTillExpiration;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            item = itemView.findViewById(R.id.item_id);
+            itemName = itemView.findViewById(R.id.item_name);
+            daysTillExpiration = itemView.findViewById(R.id.days_till_expiration);
         }
-        public TextView getTextView() {
-            return item;
+        public TextView getItemName() {
+            return itemName;
+        }
+        public TextView getDaysTillExpiration() {
+            return daysTillExpiration;
         }
     }
 }
