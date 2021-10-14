@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Home Pantry</string>
     <string name="submit">Submit</string>
+    <string name="add_item">Add Item</string>
     <string name="item_title_hint">Item name</string>
     <string name="item_manufacturer_hint">Manufacturer</string>
 </resources>
