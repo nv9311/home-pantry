@@ -10,9 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HomePantry">
         <activity
+            android:name=".ScanBarcodeActivity"
+            android:exported="true" />
+        <activity
             android:name=".AddItemActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
