@@ -82,9 +82,11 @@ public class AddItemActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent intent = result.getData();
                             // Handle the Intent
+                            assert intent != null;
                             Bundle scanData = intent.getExtras();
                             String resultData = scanData.getString(PARAM_KEY);
                             Toast.makeText(AddItemActivity.this, resultData, Toast.LENGTH_LONG).show();
+                            //nameItem.setText(resultData);
                         }
                     }
                 });
