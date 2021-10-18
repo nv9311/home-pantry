@@ -18,12 +18,14 @@ import com.example.homepantry.database.Item;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements PantryListAdapter.OnClickInterface {
 
     private RecyclerView itemsRecyclerView;
     PantryListAdapter pantryAdapter;
     AppDatabase db;
+    ExecutorService executor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity{
 
         itemsRecyclerView = findViewById(R.id.recycler_view_items);
 
-        pantryAdapter = new PantryListAdapter(this);
+        pantryAdapter = new PantryListAdapter(this, this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         itemsRecyclerView.setLayoutManager(linearLayoutManager);
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity{
 
         ItemTouchHelper itemTouchHelper = deleteItemOnSwipe();
         itemTouchHelper.attachToRecyclerView(itemsRecyclerView);
+
+        executor = AppDatabase.getExecutorsService();
     }
 
     private ItemTouchHelper deleteItemOnSwipe(){
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity{
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         int id = (int) viewHolder.itemView.getTag();
                         AppDatabase db = AppDatabase.getDatabase(MainActivity.this);
-                        AppDatabase.getExecutorsService().execute(new Runnable() {
+                        executor.execute(new Runnable() {
                             @Override
                             public void run() {
                                 db.itemDao().deleteItem(id);
@@ -86,4 +90,9 @@ public class MainActivity extends AppCompatActivity{
                 });
     }
 
+    @Override
+    public void onClickMethod(int position) {
+        Intent intent = new Intent(this, AddItemActivity.class);
+        startActivity(intent);
+    }
 }

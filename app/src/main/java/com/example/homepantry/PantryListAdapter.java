@@ -24,8 +24,16 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
     private List<Item> pantryItems;
     Context context;
 
-    public PantryListAdapter(Context context){
+    private final OnClickInterface onClickInterface;
+
+    public PantryListAdapter(Context context, OnClickInterface onClickInterface){
         this.context = context;
+        this.onClickInterface = onClickInterface;
+    }
+
+
+    public interface OnClickInterface{
+        void onClickMethod(int position);
     }
 
     @NonNull
@@ -64,7 +72,7 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
         pantryItems = items;
 
     }
-    public static class ItemViewHolder extends RecyclerView.ViewHolder{
+    public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView itemName;
         private final TextView daysTillExpiration;
 
@@ -72,12 +80,19 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
             super(itemView);
             itemName = itemView.findViewById(R.id.item_name);
             daysTillExpiration = itemView.findViewById(R.id.days_till_expiration);
+            itemView.setOnClickListener(this);
         }
         public TextView getItemName() {
             return itemName;
         }
         public TextView getDaysTillExpiration() {
             return daysTillExpiration;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getBindingAdapterPosition();
+            onClickInterface.onClickMethod(position);
         }
     }
 }
