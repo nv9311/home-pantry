@@ -4,12 +4,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.sql.Timestamp;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity(tableName = "items")
-public class Item {
+public class Item implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int itemId;
 

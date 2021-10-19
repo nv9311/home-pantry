@@ -20,9 +20,10 @@ import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
-public class AddItemActivity extends AppCompatActivity {
+public class AddAndEditItemActivity extends AppCompatActivity {
 
     private EditText nameItem;
 
@@ -31,17 +32,34 @@ public class AddItemActivity extends AppCompatActivity {
     private DatePicker datePickerItem;
     private ActivityResultLauncher<Intent> forResult;
     public final static String PARAM_KEY = "param_result";
+    private int itemId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
+        setContentView(R.layout.activity_add_and_edit_item);
 
         nameItem = findViewById(R.id.name);
         manufacturerItem = findViewById(R.id.manufacturer);
         datePickerItem = findViewById(R.id.date);
 
         forResult = registerForResult();
+
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if(bundle != null){
+            Item item = (Item) bundle.getSerializable(MainActivity.ITEM_KEY);
+            itemId = item.itemId;
+            nameItem.setText(item.itemName);
+            manufacturerItem.setText(item.manufacturer);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(item.expirationDate);
+            datePickerItem.updateDate(calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONDAY),
+                    calendar.get(Calendar.DAY_OF_MONTH));
+
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -60,11 +78,16 @@ public class AddItemActivity extends AppCompatActivity {
         item.expirationDate = date;
         item.dateAdded = LocalDateTime.now();
 
-        AppDatabase db = AppDatabase.getDatabase(this);
+        AppDatabase db = AppDatabase.getDatabase(getApplicationContext());
         AppDatabase.getExecutorsService().execute(new Runnable() {
             @Override
             public void run() {
-                db.itemDao().insert(item);
+                if(itemId == -1) {
+                    db.itemDao().insert(item);
+                }
+                else{
+                    db.itemDao().update(itemId, name, manufacturer, date);
+                }
             }
         });
         finish();
@@ -85,8 +108,8 @@ public class AddItemActivity extends AppCompatActivity {
                             assert intent != null;
                             Bundle scanData = intent.getExtras();
                             String resultData = scanData.getString(PARAM_KEY);
-                            Toast.makeText(AddItemActivity.this, resultData, Toast.LENGTH_LONG).show();
-                            //nameItem.setText(resultData);
+                            Toast.makeText(AddAndEditItemActivity.this, resultData, Toast.LENGTH_LONG).show();
+                            nameItem.setText(resultData);
                         }
                     }
                 });

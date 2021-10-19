@@ -166,7 +166,7 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                                     if(valueType == Barcode.FORMAT_UPC_E || valueType == Barcode.FORMAT_UPC_A || valueType == Barcode.TYPE_PRODUCT){
                                         Intent intent = new Intent();
                                         Bundle scanData = new Bundle();
-                                        scanData.putString(AddItemActivity.PARAM_KEY, rawValue);
+                                        scanData.putString(AddAndEditItemActivity.PARAM_KEY, rawValue);
                                         intent.putExtras(scanData);
                                         setResult(RESULT_OK, intent);
                                         finish();

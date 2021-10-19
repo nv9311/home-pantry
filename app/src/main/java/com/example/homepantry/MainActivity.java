@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
     PantryListAdapter pantryAdapter;
     AppDatabase db;
     ExecutorService executor;
+    ItemViewModel model;
+    public static final String ITEM_KEY = "item_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         itemsRecyclerView.setHasFixedSize(true);
         itemsRecyclerView.setAdapter(pantryAdapter);
 
-        ItemViewModel model = new ViewModelProvider(this).get(ItemViewModel.class);
+        model = new ViewModelProvider(this).get(ItemViewModel.class);
         final Observer<List<Item>> itemsObserver = new Observer<List<Item>>() {
             @Override
             public void onChanged(@Nullable final List<Item> items) {
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent addItemActivity = new Intent(MainActivity.this, AddItemActivity.class);
+                Intent addItemActivity = new Intent(MainActivity.this, AddAndEditItemActivity.class);
                 startActivity(addItemActivity);
             }
         });
@@ -65,6 +67,21 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         itemTouchHelper.attachToRecyclerView(itemsRecyclerView);
 
         executor = AppDatabase.getExecutorsService();
+
+        final Observer<Item> itemObserver = new Observer<Item>() {
+            @Override
+            public void onChanged(@Nullable final Item updatingItem) {
+                // Update the UI
+                Intent intent = new Intent(MainActivity.this, AddAndEditItemActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(ITEM_KEY, updatingItem);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        model.getCurrentItem().observe(this, itemObserver);
     }
 
     private ItemTouchHelper deleteItemOnSwipe(){
@@ -91,8 +108,16 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
     }
 
     @Override
-    public void onClickMethod(int position) {
-        Intent intent = new Intent(this, AddItemActivity.class);
-        startActivity(intent);
+    public void onClickMethod(int id) {
+
+        AppDatabase db = AppDatabase.getDatabase(this);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Item item = db.itemDao().getItem(id);
+                model.getCurrentItem().postValue(item);
+            }
+        });
+
     }
 }

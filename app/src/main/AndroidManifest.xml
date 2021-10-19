@@ -16,7 +16,7 @@
             android:name=".ScanBarcodeActivity"
             android:exported="true" />
         <activity
-            android:name=".AddItemActivity"
+            android:name=".AddAndEditItemActivity"
             android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity

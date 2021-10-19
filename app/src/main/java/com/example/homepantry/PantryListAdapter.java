@@ -33,7 +33,7 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
 
     public interface OnClickInterface{
-        void onClickMethod(int position);
+        void onClickMethod(int id);
     }
 
     @NonNull
@@ -91,8 +91,8 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
         @Override
         public void onClick(View v) {
-            int position = getBindingAdapterPosition();
-            onClickInterface.onClickMethod(position);
+            int id = (int) v.getTag();
+            onClickInterface.onClickMethod(id);
         }
     }
 }
