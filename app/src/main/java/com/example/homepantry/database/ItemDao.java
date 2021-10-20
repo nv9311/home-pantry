@@ -17,8 +17,8 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :id")
     Item getItem(int id);
 
-    @Query("UPDATE items SET item_name = :itemName, manufacturer = :manufacturer, expiration_date = :expirationDate WHERE itemId = :id")
-    void update(int id, String itemName, String manufacturer, Date expirationDate);
+    @Query("UPDATE items SET item_name = :itemName, manufacturer = :manufacturer, barcode = :barcode, expiration_date = :expirationDate WHERE itemId = :id")
+    void update(int id, String itemName, String manufacturer, String barcode, Date expirationDate);
 
     @Delete
     void delete(Item item);

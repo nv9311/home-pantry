@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     private EditText nameItem;
 
     private EditText manufacturerItem;
+    private EditText barcodeItem;
 
     private DatePicker datePickerItem;
     private ActivityResultLauncher<Intent> forResult;
@@ -42,6 +44,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         nameItem = findViewById(R.id.name);
         manufacturerItem = findViewById(R.id.manufacturer);
         datePickerItem = findViewById(R.id.date);
+        barcodeItem = findViewById(R.id.barcode);
 
         forResult = registerForResult();
 
@@ -52,6 +55,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             itemId = item.itemId;
             nameItem.setText(item.itemName);
             manufacturerItem.setText(item.manufacturer);
+            barcodeItem.setText(item.barcode);
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(item.expirationDate);
@@ -64,17 +68,22 @@ public class AddAndEditItemActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addItem(View v){
+        if( TextUtils.isEmpty(barcodeItem.getText())){
+            Toast.makeText(this, getString(R.string.obligatory_barcode), Toast.LENGTH_LONG).show();
+        }
         String name = nameItem.getText().toString();
         String manufacturer = manufacturerItem.getText().toString();
+        String barcode = barcodeItem.getText().toString();
         Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
-        persistItemToDatabase(name, manufacturer, date);
+        persistItemToDatabase(name, manufacturer, barcode, date);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void persistItemToDatabase(String name, String manufacturer, Date date){
+    private void persistItemToDatabase(String name, String manufacturer, String barcode, Date date){
         Item item = new Item();
         item.itemName = name;
         item.manufacturer = manufacturer;
+        item.barcode = barcode;
         item.expirationDate = date;
         item.dateAdded = LocalDateTime.now();
 
@@ -86,7 +95,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     db.itemDao().insert(item);
                 }
                 else{
-                    db.itemDao().update(itemId, name, manufacturer, date);
+                    db.itemDao().update(itemId, name, manufacturer, barcode, date);
                 }
             }
         });
@@ -109,7 +118,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                             Bundle scanData = intent.getExtras();
                             String resultData = scanData.getString(PARAM_KEY);
                             Toast.makeText(AddAndEditItemActivity.this, resultData, Toast.LENGTH_LONG).show();
-                            nameItem.setText(resultData);
+                            barcodeItem.setText(resultData);
                         }
                     }
                 });

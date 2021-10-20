@@ -4,5 +4,7 @@
     <string name="add_item">Add Item</string>
     <string name="item_title_hint">Item name</string>
     <string name="item_manufacturer_hint">Manufacturer</string>
+    <string name="item_barcode_hint">Barcode</string>
+    <string name="obligatory_barcode">Inserting barcode is required!</string>
     <string name="scan">Scan</string>
 </resources>
