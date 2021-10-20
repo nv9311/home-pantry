@@ -71,11 +71,13 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         if( TextUtils.isEmpty(barcodeItem.getText())){
             Toast.makeText(this, getString(R.string.obligatory_barcode), Toast.LENGTH_LONG).show();
         }
-        String name = nameItem.getText().toString();
-        String manufacturer = manufacturerItem.getText().toString();
-        String barcode = barcodeItem.getText().toString();
-        Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
-        persistItemToDatabase(name, manufacturer, barcode, date);
+        else {
+            String name = nameItem.getText().toString();
+            String manufacturer = manufacturerItem.getText().toString();
+            String barcode = barcodeItem.getText().toString();
+            Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
+            persistItemToDatabase(name, manufacturer, barcode, date);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
