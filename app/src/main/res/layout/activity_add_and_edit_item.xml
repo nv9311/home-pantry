@@ -17,20 +17,30 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/barcode"
-                android:layout_weight="3"
+                android:layout_weight="1"
                 android:hint="@string/item_barcode_hint"
                 android:inputType="number"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"/>
-            <Button
-                android:layout_width="0dp"
+            <FrameLayout
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/barcode_scan"
-                android:text="@string/scan"
-                android:layout_margin="16dp"
-                android:onClick="scanBarcode"/>
+                android:layout_width="wrap_content">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/barcode_scan"
+                    android:text="@string/scan"
+                    android:layout_margin="16dp"
+                    android:onClick="scanBarcode"/>
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/loading_indicator"
+                    android:layout_gravity="center"
+                    android:visibility="invisible"
+                    android:elevation="10000dp"/>
+            </FrameLayout>
         </LinearLayout>
         <EditText
             android:layout_width="match_parent"

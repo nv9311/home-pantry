@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,6 +42,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     private EditText barcodeItem;
 
     private DatePicker datePickerItem;
+    private ProgressBar loadingIndicator;
     private ActivityResultLauncher<Intent> forResult;
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
@@ -53,6 +55,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         nameItem = findViewById(R.id.name);
         datePickerItem = findViewById(R.id.date);
         barcodeItem = findViewById(R.id.barcode);
+        loadingIndicator = findViewById(R.id.loading_indicator);
 
         forResult = registerForResult();
 
@@ -119,6 +122,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
+                            loadingIndicator.setVisibility(View.VISIBLE);
                             Intent intent = result.getData();
                             // Handle the Intent
                             assert intent != null;
@@ -126,6 +130,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                             String resultData = scanData.getString(PARAM_KEY);
                             barcodeItem.setText(resultData);
                             networkRequest(resultData, getApplicationContext());
+                            loadingIndicator.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
