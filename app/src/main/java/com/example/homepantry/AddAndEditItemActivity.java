@@ -26,7 +26,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
 import com.example.homepantry.network.NetworkSingleton;
-import com.example.homepantry.utilities.NotificationUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +38,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
 
     private EditText nameItem;
 
-    private EditText manufacturerItem;
     private EditText barcodeItem;
 
     private DatePicker datePickerItem;
@@ -53,7 +51,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_and_edit_item);
 
         nameItem = findViewById(R.id.name);
-        manufacturerItem = findViewById(R.id.manufacturer);
         datePickerItem = findViewById(R.id.date);
         barcodeItem = findViewById(R.id.barcode);
 
@@ -65,7 +62,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             Item item = (Item) bundle.getSerializable(MainActivity.ITEM_KEY);
             itemId = item.itemId;
             nameItem.setText(item.itemName);
-            manufacturerItem.setText(item.manufacturer);
             barcodeItem.setText(item.barcode);
 
             Calendar calendar = Calendar.getInstance();
@@ -84,18 +80,16 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         }
         else {
             String name = nameItem.getText().toString();
-            String manufacturer = manufacturerItem.getText().toString();
             String barcode = barcodeItem.getText().toString();
             Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
-            persistItemToDatabase(name, manufacturer, barcode, date);
+            persistItemToDatabase(name, barcode, date);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void persistItemToDatabase(String name, String manufacturer, String barcode, Date date){
+    private void persistItemToDatabase(String name, String barcode, Date date){
         Item item = new Item();
         item.itemName = name;
-        item.manufacturer = manufacturer;
         item.barcode = barcode;
         item.expirationDate = date;
         item.dateAdded = LocalDateTime.now();
@@ -108,7 +102,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     db.itemDao().insert(item);
                 }
                 else{
-                    db.itemDao().update(itemId, name, manufacturer, barcode, date);
+                    db.itemDao().update(itemId, name, barcode, date);
                 }
             }
         });

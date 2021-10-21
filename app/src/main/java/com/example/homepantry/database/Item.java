@@ -16,8 +16,6 @@ public class Item implements Serializable {
     @ColumnInfo(name = "item_name")
     public String itemName;
 
-    public String manufacturer;
-
     public String barcode;
 
     @ColumnInfo(name = "date_added")
