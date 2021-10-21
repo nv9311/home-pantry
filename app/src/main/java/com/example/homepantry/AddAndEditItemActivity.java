@@ -8,17 +8,28 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
+import com.example.homepantry.network.NetworkSingleton;
+import com.example.homepantry.utilities.NotificationUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -119,12 +130,46 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                             assert intent != null;
                             Bundle scanData = intent.getExtras();
                             String resultData = scanData.getString(PARAM_KEY);
-                            Toast.makeText(AddAndEditItemActivity.this, resultData, Toast.LENGTH_LONG).show();
                             barcodeItem.setText(resultData);
+                            networkRequest(resultData, getApplicationContext());
                         }
                     }
                 });
 
     }
 
+    public void networkRequest(String barcode, Context context) {
+
+        String url = "https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if(response.getString("status_verbose").equals("product found")) {
+                                JSONObject product = response.getJSONObject("product");
+                                String name = product.getString("product_name");
+                                nameItem.setText(name);
+                            }
+                            else{
+                                Toast.makeText(context, getString(R.string.item_not_found), Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.e(getClass().getSimpleName(), "Network request error!", error);
+
+                    }
+                });
+
+        NetworkSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+    }
 }

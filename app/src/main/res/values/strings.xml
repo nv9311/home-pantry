@@ -6,5 +6,6 @@
     <string name="item_manufacturer_hint">Manufacturer</string>
     <string name="item_barcode_hint">Barcode</string>
     <string name="obligatory_barcode">Inserting barcode is required!</string>
+    <string name="item_not_found">Item not found in the database! Please fill in the data yourself.</string>
     <string name="scan">Scan</string>
 </resources>
