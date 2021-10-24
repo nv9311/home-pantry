@@ -61,4 +61,13 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
 // CameraX View class
     implementation "androidx.camera:camera-view:1.0.0-alpha27"
+
+    //NotificationCompat
+    def core_version = "1.6.0"
+    implementation "androidx.core:core:$core_version"
+
+    def work_version = "2.6.0"
+    // (Java only)
+    implementation "androidx.work:work-runtime:$work_version"
+
 }

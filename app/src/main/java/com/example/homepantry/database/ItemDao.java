@@ -17,6 +17,12 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :id")
     Item getItem(int id);
 
+    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') < date('now', 'localtime') LIMIT 2")
+    List<Item> getExpiredItems();
+
+    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') >= date('now', 'localtime') ORDER BY expiration_date LIMIT 2")
+    List<Item> getSoonToBeExpiredItems();
+
     @Query("UPDATE items SET item_name = :itemName, barcode = :barcode, expiration_date = :expirationDate WHERE itemId = :id")
     void update(int id, String itemName, String barcode, Date expirationDate);
 

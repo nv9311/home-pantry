@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         model.getCurrentItem().observe(this, itemObserver);
+
+        model.sendNotification();
     }
 
     private ItemTouchHelper deleteItemOnSwipe(){
