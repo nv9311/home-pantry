@@ -6,6 +6,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,6 +49,8 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
 
+    ItemViewModel model;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +78,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     calendar.get(Calendar.DAY_OF_MONTH));
 
         }
+        model = new ViewModelProvider(this).get(ItemViewModel.class);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -127,9 +132,9 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                             // Handle the Intent
                             assert intent != null;
                             Bundle scanData = intent.getExtras();
-                            String resultData = scanData.getString(PARAM_KEY);
-                            barcodeItem.setText(resultData);
-                            networkRequest(resultData, getApplicationContext());
+                            String barcodeString = scanData.getString(PARAM_KEY);
+                            barcodeItem.setText(barcodeString);
+                            databaseRequest(barcodeString);
                             loadingIndicator.setVisibility(View.INVISIBLE);
                         }
                     }
@@ -170,5 +175,21 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                 });
 
         NetworkSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void databaseRequest(String barcode){
+        model.getNameFromBarcode(barcode);
+
+        model.getNameItem().observe(AddAndEditItemActivity.this, new Observer<String>() {
+            @Override
+            public void onChanged(String nameString) {
+                if(nameString!= null && !nameString.equals("")) {
+                    nameItem.setText(nameString);
+                }
+                else{
+                    networkRequest(barcode, getApplicationContext());
+                }
+            }
+        });
     }
 }

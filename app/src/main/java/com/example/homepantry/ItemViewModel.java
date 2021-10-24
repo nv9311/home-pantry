@@ -21,12 +21,15 @@ public class ItemViewModel extends AndroidViewModel {
     private LiveData<List<Item>> items;
     private MutableLiveData<Item> item;
     private WorkManager mWorkManager;
+    private LiveData<String> nameItem;
+    private Application application;
 
     private final String UNIQUE_WORK_NAME = "NOTIFICATION_PERIODIC_WORK";
     private final String TAG_NOTIFICATION = "NOTIFICATION";
 
     public ItemViewModel(Application application){
         super(application);
+        this.application = application;
         items = AppDatabase.getDatabase(application).itemDao().getAll();
         mWorkManager = WorkManager.getInstance(application);
     }
@@ -50,5 +53,12 @@ public class ItemViewModel extends AndroidViewModel {
                         .setBackoffCriteria(BackoffPolicy.LINEAR, PeriodicWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
                         .build();
         mWorkManager.enqueueUniquePeriodicWork(UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, notificationsWork);
+    }
+
+    public void getNameFromBarcode(String barcode){
+       nameItem = AppDatabase.getDatabase(application).itemDao().getName(barcode);
+    }
+    public LiveData<String> getNameItem(){
+        return nameItem;
     }
 }
