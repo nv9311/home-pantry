@@ -15,4 +15,5 @@
     <string name="notification_days"> days.</string>
     <string name="notification_channel_name">Food expiry reminders</string>
     <string name="notification_channel_description">Sends reminder when an item is about to be expired and when an item has already expired.</string>
+    <string name="product_image_content_description">Product image</string>
 </resources>

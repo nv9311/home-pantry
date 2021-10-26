@@ -6,6 +6,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homepantry.database.Item;
 import com.example.homepantry.utilities.DateUtils;
+import com.example.homepantry.utilities.ImageUtils;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -59,6 +61,7 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
         else{
             holder.daysTillExpiration.setTextColor(Color.BLACK);
         }
+        holder.iconImage.setImageBitmap(ImageUtils.getBitmapFromByteArray(item.image));
         holder.itemView.setTag(item.itemId);
     }
 
@@ -75,11 +78,13 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView itemName;
         private final TextView daysTillExpiration;
+        private final ImageView iconImage;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.item_name);
             daysTillExpiration = itemView.findViewById(R.id.days_till_expiration);
+            iconImage = itemView.findViewById(R.id.list_item_icon);
             itemView.setOnClickListener(this);
         }
         public TextView getItemName() {

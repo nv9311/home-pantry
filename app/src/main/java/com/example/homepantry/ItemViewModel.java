@@ -21,7 +21,7 @@ public class ItemViewModel extends AndroidViewModel {
     private LiveData<List<Item>> items;
     private MutableLiveData<Item> item;
     private WorkManager mWorkManager;
-    private LiveData<String> nameItem;
+    private LiveData<Item> itemFromBarcode;
     private Application application;
 
     private final String UNIQUE_WORK_NAME = "NOTIFICATION_PERIODIC_WORK";
@@ -55,10 +55,10 @@ public class ItemViewModel extends AndroidViewModel {
         mWorkManager.enqueueUniquePeriodicWork(UNIQUE_WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, notificationsWork);
     }
 
-    public void getNameFromBarcode(String barcode){
-       nameItem = AppDatabase.getDatabase(application).itemDao().getName(barcode);
+    public void getItemFromBarcode(String barcode){
+       itemFromBarcode = AppDatabase.getDatabase(application).itemDao().getItem(barcode);
     }
-    public LiveData<String> getNameItem(){
-        return nameItem;
+    public LiveData<Item> getItemFromBarcode(){
+        return itemFromBarcode;
     }
 }

@@ -18,6 +18,8 @@ public class Item implements Serializable {
 
     public String barcode;
 
+    public byte[] image;
+
     @ColumnInfo(name = "date_added")
     public LocalDateTime dateAdded;
 

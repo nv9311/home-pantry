@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,16 +20,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
 import com.example.homepantry.network.NetworkSingleton;
+import com.example.homepantry.utilities.ImageUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +49,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
 
     private DatePicker datePickerItem;
     private ProgressBar loadingIndicator;
+    private ImageView pictureItem;
     private ActivityResultLauncher<Intent> forResult;
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
@@ -60,6 +65,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         datePickerItem = findViewById(R.id.date);
         barcodeItem = findViewById(R.id.barcode);
         loadingIndicator = findViewById(R.id.loading_indicator);
+        pictureItem = findViewById(R.id.picture_item);
 
         forResult = registerForResult();
 
@@ -70,6 +76,8 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             itemId = item.itemId;
             nameItem.setText(item.itemName);
             barcodeItem.setText(item.barcode);
+            Bitmap bitmap = ImageUtils.getBitmapFromByteArray(item.image);
+            pictureItem.setImageBitmap(bitmap);
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(item.expirationDate);
@@ -89,18 +97,22 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         else {
             String name = nameItem.getText().toString();
             String barcode = barcodeItem.getText().toString();
+            byte[] image = ImageUtils.getByteArrayFromDrawable(pictureItem.getDrawable());
             Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
-            persistItemToDatabase(name, barcode, date);
+            persistItemToDatabase(name, barcode, image, date);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void persistItemToDatabase(String name, String barcode, Date date){
+    private void persistItemToDatabase(String name, String barcode, byte[] image, Date date){
+
         Item item = new Item();
         item.itemName = name;
         item.barcode = barcode;
         item.expirationDate = date;
         item.dateAdded = LocalDateTime.now();
+        item.image = image;
+
 
         AppDatabase db = AppDatabase.getDatabase(getApplicationContext());
         AppDatabase.getExecutorsService().execute(new Runnable() {
@@ -110,7 +122,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     db.itemDao().insert(item);
                 }
                 else{
-                    db.itemDao().update(itemId, name, barcode, date);
+                    db.itemDao().update(itemId, name, barcode, image, date);
                 }
             }
         });
@@ -155,6 +167,8 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                             if(response.getString("status_verbose").equals("product found")) {
                                 JSONObject product = response.getJSONObject("product");
                                 String name = product.getString("product_name");
+                                String urlImage = product.getString("image_front_thumb_url");
+                                getImageFromURL(context, urlImage);
                                 nameItem.setText(name);
                             }
                             else{
@@ -176,15 +190,31 @@ public class AddAndEditItemActivity extends AppCompatActivity {
 
         NetworkSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
+    private void getImageFromURL(Context context, String url){
+        NetworkSingleton.getInstance(context).getImageLoader().get(url, new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                Bitmap bitmap = response.getBitmap();
+                pictureItem.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(getClass().getSimpleName(), error.toString());
+            }
+        });
+    }
 
     private void databaseRequest(String barcode){
-        model.getNameFromBarcode(barcode);
+        model.getItemFromBarcode(barcode);
 
-        model.getNameItem().observe(AddAndEditItemActivity.this, new Observer<String>() {
+        model.getItemFromBarcode().observe(AddAndEditItemActivity.this, new Observer<Item>() {
             @Override
-            public void onChanged(String nameString) {
-                if(nameString!= null && !nameString.equals("")) {
-                    nameItem.setText(nameString);
+            public void onChanged(Item itemFromBarcode) {
+                if(itemFromBarcode!= null) {
+                    nameItem.setText(itemFromBarcode.itemName);
+                    Bitmap bitmap = ImageUtils.getBitmapFromByteArray(itemFromBarcode.image);
+                    pictureItem.setImageBitmap(bitmap);
                 }
                 else{
                     networkRequest(barcode, getApplicationContext());

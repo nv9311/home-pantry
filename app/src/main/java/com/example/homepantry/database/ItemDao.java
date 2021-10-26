@@ -23,11 +23,11 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') >= date('now', 'localtime') ORDER BY expiration_date LIMIT 2")
     List<Item> getSoonToBeExpiredItems();
 
-    @Query("SELECT item_name FROM items WHERE barcode = :barcode ORDER BY date_added DESC LIMIT 1")
-    LiveData<String> getName(String barcode);
+    @Query("SELECT * FROM items WHERE barcode = :barcode ORDER BY date_added DESC LIMIT 1")
+    LiveData<Item> getItem(String barcode);
 
-    @Query("UPDATE items SET item_name = :itemName, barcode = :barcode, expiration_date = :expirationDate WHERE itemId = :id")
-    void update(int id, String itemName, String barcode, Date expirationDate);
+    @Query("UPDATE items SET item_name = :itemName, barcode = :barcode, image = :image, expiration_date = :expirationDate WHERE itemId = :id")
+    void update(int id, String itemName, String barcode, byte[] image, Date expirationDate);
 
     @Delete
     void delete(Item item);
