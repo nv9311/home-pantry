@@ -20,50 +20,39 @@
                 android:layout_weight="1"
                 android:hint="@string/item_barcode_hint"
                 android:inputType="number"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"/>
-            <FrameLayout
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content">
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/barcode_scan"
-                    android:text="@string/scan"
-                    android:layout_margin="16dp"
-                    android:onClick="scanBarcode"/>
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/loading_indicator"
-                    android:layout_gravity="center"
-                    android:visibility="invisible"
-                    android:elevation="10000dp"/>
-            </FrameLayout>
+                android:layout_margin="16dp"/>
         </LinearLayout>
-
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:id="@+id/picture_item"
-                android:layout_margin="16dp"
-                android:contentDescription="@string/product_image_content_description"
-                android:src="@drawable/baseline_image_placeholder"/>
-            <EditText
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:id="@+id/picture_item"
+                    android:layout_margin="16dp"
+                    android:contentDescription="@string/product_image_content_description"
+                    android:src="@drawable/baseline_image_placeholder"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/name"
+                    android:hint="@string/item_title_hint"
+                    android:inputType="text"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp"
+                    />
+            </LinearLayout>
+            <ProgressBar
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/name"
-                android:hint="@string/item_title_hint"
-                android:inputType="text"
-                android:layout_marginBottom="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                />
-        </LinearLayout>
+                android:id="@+id/loading_indicator"
+                android:layout_gravity="center"
+                android:visibility="invisible"/>
+        </FrameLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
