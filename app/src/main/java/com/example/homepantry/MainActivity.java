@@ -1,5 +1,9 @@
 package com.example.homepantry;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
     AppDatabase db;
     ExecutorService executor;
     ItemViewModel model;
+    private ActivityResultLauncher<Intent> forResult;
     public static final String ITEM_KEY = "item_key";
 
     @Override
@@ -58,8 +64,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         fab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent addItemActivity = new Intent(MainActivity.this, AddAndEditItemActivity.class);
-                startActivity(addItemActivity);
+                forResult.launch(new Intent(MainActivity.this, ScanBarcodeActivity.class));
             }
         });
 
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         model.getCurrentItem().observe(this, itemObserver);
 
         model.sendNotification();
+        forResult = registerForResult();
     }
 
     private ItemTouchHelper deleteItemOnSwipe(){
@@ -120,6 +126,24 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
                 model.getCurrentItem().postValue(item);
             }
         });
+
+    }
+    private ActivityResultLauncher<Intent> registerForResult(){
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent intent = result.getData();
+                            // Handle the Intent
+                            assert intent != null;
+                            Bundle scanData = intent.getExtras();
+                            Intent addItemActivity = new Intent(MainActivity.this, AddAndEditItemActivity.class);
+                            addItemActivity.putExtras(scanData);
+                            startActivity(addItemActivity);
+                        }
+                    }
+                });
 
     }
 }

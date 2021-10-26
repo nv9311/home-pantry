@@ -1,15 +1,10 @@
 package com.example.homepantry;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -50,7 +45,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     private DatePicker datePickerItem;
     private ProgressBar loadingIndicator;
     private ImageView pictureItem;
-    private ActivityResultLauncher<Intent> forResult;
+
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
 
@@ -67,11 +62,11 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         loadingIndicator = findViewById(R.id.loading_indicator);
         pictureItem = findViewById(R.id.picture_item);
 
-        forResult = registerForResult();
-
+        model = new ViewModelProvider(this).get(ItemViewModel.class);
+        loadingIndicator.setVisibility(View.VISIBLE);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        if(bundle != null){
+        if(bundle != null && bundle.getSerializable(MainActivity.ITEM_KEY)!= null){
             Item item = (Item) bundle.getSerializable(MainActivity.ITEM_KEY);
             itemId = item.itemId;
             nameItem.setText(item.itemName);
@@ -85,8 +80,12 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     calendar.get(Calendar.MONDAY),
                     calendar.get(Calendar.DAY_OF_MONTH));
 
+        }else{
+            String barcodeString = bundle.getString(PARAM_KEY);
+            barcodeItem.setText(barcodeString);
+            databaseRequest(barcodeString);
         }
-        model = new ViewModelProvider(this).get(ItemViewModel.class);
+        loadingIndicator.setVisibility(View.INVISIBLE);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -127,31 +126,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             }
         });
         finish();
-    }
-
-    public void scanBarcode(View view) {
-        forResult.launch(new Intent(this, ScanBarcodeActivity.class));
-    }
-
-    private ActivityResultLauncher<Intent> registerForResult(){
-        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            loadingIndicator.setVisibility(View.VISIBLE);
-                            Intent intent = result.getData();
-                            // Handle the Intent
-                            assert intent != null;
-                            Bundle scanData = intent.getExtras();
-                            String barcodeString = scanData.getString(PARAM_KEY);
-                            barcodeItem.setText(barcodeString);
-                            databaseRequest(barcodeString);
-                            loadingIndicator.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                });
-
     }
 
     public void networkRequest(String barcode, Context context) {
