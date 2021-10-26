@@ -14,9 +14,9 @@
 
         <ImageView
             android:id="@+id/list_item_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_margin="16dp"
             android:contentDescription="@string/product_image_content_description"
             android:src="@drawable/baseline_image_placeholder"/>
 

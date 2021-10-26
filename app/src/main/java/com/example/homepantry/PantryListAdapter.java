@@ -1,5 +1,6 @@
 package com.example.homepantry;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -12,12 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.homepantry.database.Item;
 import com.example.homepantry.utilities.DateUtils;
 import com.example.homepantry.utilities.ImageUtils;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +52,11 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
         Date date  = item.expirationDate;
         long days = DateUtils.daysTillExpiration(context, date);
         holder.itemName.setText(name);
-        holder.daysTillExpiration.setText("Potek uporabe: " + days + " dni");
+        @SuppressLint("DefaultLocale") String expirationString = String.format("%s %d %s",
+                context.getString(R.string.product_expiry),
+                days,
+                context.getString(R.string.days));
+        holder.daysTillExpiration.setText(expirationString);
         if(days < 1) {
             holder.daysTillExpiration.setTextColor(Color.RED);
         }
