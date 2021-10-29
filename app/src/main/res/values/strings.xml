@@ -19,4 +19,6 @@
     <string name="product_image_content_description">Product image</string>
     <string name="product_expiry">Product expiry:</string>
     <string name="days">days</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="change_photo">Change photo</string>
 </resources>

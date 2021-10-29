@@ -1,13 +1,19 @@
 package com.example.homepantry;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -50,6 +56,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     private int itemId = -1;
 
     ItemViewModel model;
+    ActivityResultLauncher<Intent> changePhotoRegisterResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         loadingIndicator.setVisibility(View.VISIBLE);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        if(bundle != null && bundle.getSerializable(MainActivity.ITEM_KEY)!= null){
+        if (bundle != null && bundle.getSerializable(MainActivity.ITEM_KEY) != null) {
             Item item = (Item) bundle.getSerializable(MainActivity.ITEM_KEY);
             itemId = item.itemId;
             nameItem.setText(item.itemName);
@@ -80,12 +87,21 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                     calendar.get(Calendar.MONDAY),
                     calendar.get(Calendar.DAY_OF_MONTH));
 
-        }else{
+        }
+        // code for creating new item. get data from barcode in the database only once in the beginning
+        //if it is only screen rotation then the data needed is preserved automatically
+        else if(bundle != null && savedInstanceState == null){
             String barcodeString = bundle.getString(PARAM_KEY);
             barcodeItem.setText(barcodeString);
             databaseRequest(barcodeString);
         }
+
+        if(savedInstanceState != null){
+            byte[] image = savedInstanceState.getByteArray(ImageUtils.BYTE_ARRAY_KEY);
+            pictureItem.setImageBitmap(ImageUtils.getBitmapFromByteArray(image));
+        }
         loadingIndicator.setVisibility(View.INVISIBLE);
+        changePhotoRegisterResult = registerForResultChangePhoto();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -195,5 +211,32 @@ public class AddAndEditItemActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void changePhoto(View view) {
+        changePhotoRegisterResult.launch(new Intent(this, TakePictureActivity.class));
+    }
+    private ActivityResultLauncher<Intent> registerForResultChangePhoto(){
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent intent = result.getData();
+                            if(intent != null) {
+                                Bundle bundle = intent.getExtras();
+                                byte[] bytes = bundle.getByteArray(ImageUtils.BYTE_ARRAY_KEY);
+                                Bitmap bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+                                pictureItem.setImageBitmap(bitmapImage);
+                            }
+                        }
+                    }
+                });
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        byte [] image = ImageUtils.getByteArrayFromDrawable(pictureItem.getDrawable());
+        outState.putByteArray(ImageUtils.BYTE_ARRAY_KEY, image);
+        super.onSaveInstanceState(outState);
     }
 }

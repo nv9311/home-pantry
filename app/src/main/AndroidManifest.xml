@@ -4,7 +4,7 @@
 
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HomePantry">
+        <activity
+            android:name=".TakePictureActivity"
+            android:exported="true" />
         <activity
             android:name=".ScanBarcodeActivity"
             android:exported="true" />
