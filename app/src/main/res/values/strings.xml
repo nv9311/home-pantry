@@ -21,4 +21,6 @@
     <string name="days">days</string>
     <string name="take_photo">Take Photo</string>
     <string name="change_photo">Change photo</string>
+    <string name="undo">Undo</string>
+    <string name="item_deleted">Item deleted!</string>
 </resources>

@@ -21,9 +21,13 @@ import android.view.View;
 import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class MainActivity extends AppCompatActivity implements PantryListAdapter.OnClickInterface {
 
@@ -90,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
 
         model.sendNotification();
         forResult = registerForResult();
+
+        db = AppDatabase.getDatabase(this);
     }
 
     private ItemTouchHelper deleteItemOnSwipe(){
@@ -104,21 +110,56 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
                     @Override
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                         int id = (int) viewHolder.itemView.getTag();
-                        AppDatabase db = AppDatabase.getDatabase(MainActivity.this);
+                        final Future<Item> future = executor.submit(new ItemCallable(db, id));
+
                         executor.execute(new Runnable() {
                             @Override
                             public void run() {
                                 db.itemDao().deleteItem(id);
                             }
                         });
+                        showSnackBar(viewHolder, future);
                     }
                 });
+    }
+    private static class ItemCallable implements Callable<Item> {
+        AppDatabase db;
+        int id;
+
+        public ItemCallable(AppDatabase db, int id){
+            this.db = db;
+            this.id = id;
+        }
+        @Override
+        public Item call() throws Exception {
+            return  db.itemDao().getItem(id);
+        }
+    }
+    private void showSnackBar(RecyclerView.ViewHolder viewHolder, Future<Item> future){
+        Snackbar
+                .make(viewHolder.itemView, getString(R.string.item_deleted),
+                        Snackbar.LENGTH_SHORT)
+                .setAction(R.string.undo, new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    db.itemDao().insert(future.get());
+                                } catch (ExecutionException | InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                    }
+                })
+                .show();
     }
 
     @Override
     public void onClickMethod(int id) {
-
-        AppDatabase db = AppDatabase.getDatabase(this);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -144,6 +185,5 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
                         }
                     }
                 });
-
     }
 }
