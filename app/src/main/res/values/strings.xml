@@ -23,4 +23,8 @@
     <string name="change_photo">Change photo</string>
     <string name="undo">Undo</string>
     <string name="item_deleted">Item deleted!</string>
+    <string name="content_description_change_photo">Change photo</string>
+    <string name="calendar_icon_content_description">Calendar icon</string>
+    <string name="calendar_date_of_expiry">Date of expiry</string>
+    <string name="content_description_change_expiry_date">Change expiry date</string>
 </resources>

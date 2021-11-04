@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,23 +35,29 @@ import com.example.homepantry.database.AppDatabase;
 import com.example.homepantry.database.Item;
 import com.example.homepantry.network.NetworkSingleton;
 import com.example.homepantry.utilities.ImageUtils;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class AddAndEditItemActivity extends AppCompatActivity {
 
-    private EditText nameItem;
+    private TextInputEditText nameItem;
 
-    private EditText barcodeItem;
+    private TextInputEditText barcodeItem;
 
-    private DatePicker datePickerItem;
     private ProgressBar loadingIndicator;
     private ImageView pictureItem;
+    private TextInputLayout textInputLayout;
+    private EditText dateEditText;
+    private Calendar mCalendar;
 
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
@@ -64,10 +71,13 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_and_edit_item);
 
         nameItem = findViewById(R.id.name);
-        datePickerItem = findViewById(R.id.date);
         barcodeItem = findViewById(R.id.barcode);
         loadingIndicator = findViewById(R.id.loading_indicator);
         pictureItem = findViewById(R.id.picture_item);
+        textInputLayout = findViewById(R.id.item_text_input_layout);
+
+        mCalendar = Calendar.getInstance();
+        dateEditText = findViewById(R.id.date);
 
         model = new ViewModelProvider(this).get(ItemViewModel.class);
         loadingIndicator.setVisibility(View.VISIBLE);
@@ -80,12 +90,9 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             barcodeItem.setText(item.barcode);
             Bitmap bitmap = ImageUtils.getBitmapFromByteArray(item.image);
             pictureItem.setImageBitmap(bitmap);
+            mCalendar.setTime(item.expirationDate);
+            updateDateEditText();
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(item.expirationDate);
-            datePickerItem.updateDate(calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONDAY),
-                    calendar.get(Calendar.DAY_OF_MONTH));
 
         }
         // code for creating new item. get data from barcode in the database only once in the beginning
@@ -102,6 +109,37 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         }
         loadingIndicator.setVisibility(View.INVISIBLE);
         changePhotoRegisterResult = registerForResultChangePhoto();
+
+        textInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changePhotoRegisterResult.launch(new Intent(AddAndEditItemActivity.this, TakePictureActivity.class));
+            }
+        });
+
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                mCalendar.set(Calendar.YEAR, year);
+                mCalendar.set(Calendar.MONTH, month);
+                mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateDateEditText();
+            }
+        };
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AddAndEditItemActivity.this, date, mCalendar
+                        .get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+    private void updateDateEditText() {
+        String myFormat = "dd.MM.yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+
+        dateEditText.setText(sdf.format(mCalendar.getTime()));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -113,7 +151,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
             String name = nameItem.getText().toString();
             String barcode = barcodeItem.getText().toString();
             byte[] image = ImageUtils.getByteArrayFromDrawable(pictureItem.getDrawable());
-            Date date = new Date(datePickerItem.getAutofillValue().getDateValue());
+            Date date = mCalendar.getTime();
             persistItemToDatabase(name, barcode, image, date);
         }
     }
@@ -213,9 +251,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         });
     }
 
-    public void changePhoto(View view) {
-        changePhotoRegisterResult.launch(new Intent(this, TakePictureActivity.class));
-    }
     private ActivityResultLauncher<Intent> registerForResultChangePhoto(){
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
