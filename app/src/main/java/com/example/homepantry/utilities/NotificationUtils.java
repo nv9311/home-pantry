@@ -11,24 +11,32 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.homepantry.MainActivity;
 import com.example.homepantry.R;
+import java.util.ArrayList;
 
 public class NotificationUtils {
 
     private static final String CHANNEL_ID = "NOTIFICATION_CHANNEL_REMINDERS";
     private static final int NOTIFICATION_ID = 55;
 
-    public static void createNotification(Context context, String contentTitle, String contentText){
+    public static void createNotification(Context context, String contentText, ArrayList<String> contentTexts){
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        for (String text:contentTexts) {
+            inboxStyle.addLine(text);
+        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_android_24)
-                .setContentTitle(contentTitle)
+                .setContentTitle(context.getString(R.string.notification_title))
                 .setContentText(contentText)
+                .setStyle(inboxStyle)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setAutoCancel(true);
 
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);

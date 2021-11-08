@@ -10,11 +10,13 @@
     <string name="scan">Scan</string>
 
     <string name="notification_has_expired"> has expired </string>
-    <string name="notification_will_expire_in"> will expire in </string>
+    <string name="notification_will_expire_in_one_day"> will expire in one day!</string>
+    <string name="notification_will_expire">will expire</string>
     <string name="notification_days_ago"> days ago!</string>
-    <string name="notification_days"> days.</string>
+    <string name="notification_products_have_expired">products have expired!</string>
     <string name="notification_channel_name">Food expiry reminders</string>
     <string name="notification_channel_description">Sends reminder when an item is about to be expired and when an item has already expired.</string>
+    <string name="notification_title">Products expiry reminder!</string>
 
     <string name="product_image_content_description">Product image</string>
     <string name="product_expiry">Product expiry:</string>

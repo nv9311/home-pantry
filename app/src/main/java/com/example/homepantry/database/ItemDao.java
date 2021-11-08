@@ -17,10 +17,10 @@ public interface ItemDao {
     @Query("SELECT * FROM items WHERE itemId = :id")
     Item getItem(int id);
 
-    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') < date('now', 'localtime') LIMIT 2")
+    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') < date('now', 'localtime') LIMIT 6")
     List<Item> getExpiredItems();
 
-    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') >= date('now', 'localtime') ORDER BY expiration_date LIMIT 2")
+    @Query("SELECT * FROM items WHERE DATE(ROUND(expiration_date / 1000), 'unixepoch', 'localtime') >= date('now', 'localtime') ORDER BY expiration_date LIMIT 6")
     List<Item> getSoonToBeExpiredItems();
 
     @Query("SELECT * FROM items WHERE barcode = :barcode ORDER BY date_added DESC LIMIT 1")

@@ -15,6 +15,7 @@ import com.example.homepantry.database.Item;
 import com.example.homepantry.utilities.DateUtils;
 import com.example.homepantry.utilities.NotificationUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationWorker extends Worker {
@@ -25,33 +26,42 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        int addedToNotification = 0;
+        int notificationSize = 6;
+        int numOfSoonToBeExpired;
+        int addedToNotificationSoonExpired = 0;
+
         Context context = getApplicationContext();
         AppDatabase db = AppDatabase.getDatabase(context);
         List<Item> itemListExpired = db.itemDao().getExpiredItems();
-        List<Item> soonTobeExpired = db.itemDao().getSoonToBeExpiredItems();
+        List<Item> soonToBeExpiredItems = db.itemDao().getSoonToBeExpiredItems();
 
-        String [] dataArray = new String[]{"", ""};
-        if(itemListExpired.size() > 1){
+        ArrayList<String> dataArray = new ArrayList<>();
+        if(itemListExpired.size() > 0){
             for (int i = 0; i < itemListExpired.size(); i++) {
                 Item item = itemListExpired.get(i);
-                dataArray[i] = expiredNotificationString(context, item);
+                dataArray.add(expiredNotificationString(context, item));
+                addedToNotification++;
             }
 
         }
-        else if(itemListExpired.size() == 1){
-            dataArray[0] = expiredNotificationString(context, itemListExpired.get(0));
-            if(soonTobeExpired.size()> 0) {
-                dataArray[1] = soonToBeExpiredString(context, soonTobeExpired.get(0));
+        numOfSoonToBeExpired = Math.min(notificationSize - addedToNotification, soonToBeExpiredItems.size());
+
+        for (int i = 0; i < numOfSoonToBeExpired; i++) {
+            Item item = soonToBeExpiredItems.get(i);
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                long difference = abs(DateUtils.daysTillExpiration(context, item.expirationDate));
+                if (difference <= 1){
+                    dataArray.add(0 ,soonToBeExpiredString(context, item));
+                    addedToNotificationSoonExpired++;
+                }
             }
         }
-        else{
-            for (int i = 0; i < soonTobeExpired.size(); i++) {
-                Item item = soonTobeExpired.get(i);
-                dataArray[i] = soonToBeExpiredString(context, item);
-            }
-        }
-        if(!dataArray[0].equals("")) {
-            NotificationUtils.createNotification(context, dataArray[0], dataArray[1]);
+
+        String contentText = contentTextString(context, addedToNotification, addedToNotificationSoonExpired);
+
+        if(!dataArray.isEmpty()) {
+            NotificationUtils.createNotification(context, contentText, dataArray);
         }
         return Result.success();
     }
@@ -67,14 +77,21 @@ public class NotificationWorker extends Worker {
         return notification;
     }
     private String soonToBeExpiredString(Context context, Item item){
-        String willExpireIn = context.getString(R.string.notification_will_expire_in);
-        String days = context.getString(R.string.notification_days);
-        String notificationString = item.itemName + " " + willExpireIn + " ";
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            long difference = DateUtils.daysTillExpiration(context, item.expirationDate);
-            notificationString += Long.toString(difference);
+        String willExpire = context.getString(R.string.notification_will_expire);
+        return item.itemName + " " + willExpire + "!";
+    }
+    private String contentTextString(Context context, int numOfExpired, int numOfSoonExpired){
+        String willExpireInOneDay = context.getString(R.string.notification_will_expire_in_one_day);
+        String returnString = "";
+        if(numOfExpired > 0){
+            returnString = returnString + numOfExpired + " "
+                    + context.getString(R.string.notification_products_have_expired) + " ";
         }
-        notificationString = notificationString + " " + days;
-        return notificationString;
+        if(numOfSoonExpired > 0){
+            returnString = returnString
+                    + numOfSoonExpired + " "
+                    + willExpireInOneDay;
+        }
+        return returnString;
     }
 }
