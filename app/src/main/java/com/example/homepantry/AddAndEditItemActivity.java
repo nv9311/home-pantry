@@ -144,8 +144,8 @@ public class AddAndEditItemActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void addItem(View v){
-        if( TextUtils.isEmpty(barcodeItem.getText())){
-            Toast.makeText(this, getString(R.string.obligatory_barcode), Toast.LENGTH_LONG).show();
+        if( TextUtils.isEmpty(barcodeItem.getText()) || TextUtils.isEmpty(nameItem.getText())){
+            Toast.makeText(this, getString(R.string.obligatory_name), Toast.LENGTH_LONG).show();
         }
         else {
             String name = nameItem.getText().toString();

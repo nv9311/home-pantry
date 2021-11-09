@@ -5,7 +5,7 @@
     <string name="item_title_hint">Product name</string>
     <string name="item_barcode_hint">Barcode</string>
     <string name="expiration_date">Date of Expiry</string>
-    <string name="obligatory_barcode">Inserting barcode is required!</string>
+    <string name="obligatory_name">Inserting product name is required!</string>
     <string name="item_not_found">Item not found in the database! Please fill in the data yourself.</string>
     <string name="scan">Scan</string>
 
