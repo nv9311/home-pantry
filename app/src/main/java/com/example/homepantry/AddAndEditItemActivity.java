@@ -4,7 +4,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,9 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class AddAndEditItemActivity extends AppCompatActivity {
@@ -142,7 +141,6 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         dateEditText.setText(sdf.format(mCalendar.getTime()));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addItem(View v){
         if( TextUtils.isEmpty(barcodeItem.getText()) || TextUtils.isEmpty(nameItem.getText())){
             Toast.makeText(this, getString(R.string.obligatory_name), Toast.LENGTH_LONG).show();
@@ -156,14 +154,13 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void persistItemToDatabase(String name, String barcode, byte[] image, Date date){
 
         Item item = new Item();
         item.itemName = name;
         item.barcode = barcode;
         item.expirationDate = date;
-        item.dateAdded = LocalDateTime.now();
+        item.dateAdded = new GregorianCalendar().getTime();
         item.image = image;
 
 

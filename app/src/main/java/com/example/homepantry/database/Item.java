@@ -5,7 +5,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity(tableName = "items")
@@ -21,7 +20,7 @@ public class Item implements Serializable {
     public byte[] image;
 
     @ColumnInfo(name = "date_added")
-    public LocalDateTime dateAdded;
+    public Date dateAdded;
 
     @ColumnInfo(name = "expiration_date")
     public Date expirationDate;
