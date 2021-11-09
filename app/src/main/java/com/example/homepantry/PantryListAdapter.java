@@ -7,6 +7,8 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,12 +18,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.homepantry.database.Item;
 import com.example.homepantry.utilities.DateUtils;
 import com.example.homepantry.utilities.ImageUtils;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.ItemViewHolder> {
+public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.ItemViewHolder> implements Filterable {
 
     private List<Item> pantryItems;
+    private List<Item> pantryItemsFiltered;
     Context context;
 
     private final OnClickInterface onClickInterface;
@@ -47,7 +51,7 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
-        Item item = pantryItems.get(position);
+        Item item = pantryItemsFiltered.get(position);
         String name = item.itemName;
         Date date  = item.expirationDate;
         long days = DateUtils.daysTillExpiration(context, date);
@@ -69,13 +73,48 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
 
     @Override
     public int getItemCount() {
-        if(pantryItems == null) return 0;
-        else return pantryItems.size();
+        if(pantryItemsFiltered == null) return 0;
+        else return pantryItemsFiltered.size();
     }
 
     public void swapItems(List<Item> items){
         pantryItems = items;
+        pantryItemsFiltered = items;
 
+    }
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<Item> tmpList = new ArrayList<>();
+                if(constraint.toString().isEmpty()){
+                    tmpList = pantryItems;
+                }
+                else{
+                    for (Item element:pantryItems) {
+                        if (element.itemName.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            tmpList.add(element);
+                        }
+                    }
+                }
+                FilterResults results = new FilterResults();
+                results.values = tmpList;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                try {
+                    pantryItemsFiltered = (List<Item>) results.values;
+                    notifyDataSetChanged();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
     }
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView itemName;
