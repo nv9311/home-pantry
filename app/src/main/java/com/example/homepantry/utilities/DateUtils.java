@@ -1,26 +1,31 @@
 package com.example.homepantry.utilities;
 
-import android.content.Context;
-import android.os.Build;
-import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
-
-import com.example.homepantry.MainActivity;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static long daysTillExpiration(Context context, Date date){
-        Instant instant = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
-        long diff = date.getTime() - Date.from(instant).getTime();
+    public static long daysTillExpiration(Date date){
+
+        //Midnight current date
+        Calendar today = new GregorianCalendar();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        //Midnight expiry date
+        Calendar calendarDate = new GregorianCalendar();
+        calendarDate.setTime(date);
+        calendarDate.set(Calendar.HOUR_OF_DAY, 0);
+        calendarDate.set(Calendar.MINUTE, 0);
+        calendarDate.set(Calendar.SECOND, 0);
+        calendarDate.set(Calendar.MILLISECOND, 0);
+
+        long diff = calendarDate.getTime().getTime() - today.getTime().getTime();
         TimeUnit time = TimeUnit.DAYS;
-        long difference = time.convert(diff, TimeUnit.MILLISECONDS);
-        return difference;
+
+        return time.convert(diff, TimeUnit.MILLISECONDS);
     }
 }

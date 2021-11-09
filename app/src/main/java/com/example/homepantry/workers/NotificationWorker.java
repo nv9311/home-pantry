@@ -49,12 +49,10 @@ public class NotificationWorker extends Worker {
 
         for (int i = 0; i < numOfSoonToBeExpired; i++) {
             Item item = soonToBeExpiredItems.get(i);
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-                long difference = abs(DateUtils.daysTillExpiration(context, item.expirationDate));
-                if (difference <= 1){
-                    dataArray.add(0 ,soonToBeExpiredString(context, item));
-                    addedToNotificationSoonExpired++;
-                }
+            long difference = abs(DateUtils.daysTillExpiration(item.expirationDate));
+            if (difference <= 1){
+                dataArray.add(0 ,soonToBeExpiredString(context, item));
+                addedToNotificationSoonExpired++;
             }
         }
 
@@ -69,10 +67,9 @@ public class NotificationWorker extends Worker {
         String hasExpired = context.getString(R.string.notification_has_expired);
         String daysAgo = context.getString(R.string.notification_days_ago);
         String notification = item.itemName + " " + hasExpired + " ";
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            long difference = abs(DateUtils.daysTillExpiration(context, item.expirationDate));
-            notification += Long.toString(difference);
-        }
+        long difference = abs(DateUtils.daysTillExpiration(item.expirationDate));
+        notification += Long.toString(difference);
+
         notification = notification + " " + daysAgo;
         return notification;
     }

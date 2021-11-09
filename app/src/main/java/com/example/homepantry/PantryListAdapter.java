@@ -48,13 +48,12 @@ public class PantryListAdapter extends RecyclerView.Adapter<PantryListAdapter.It
         return new ItemViewHolder(view);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull PantryListAdapter.ItemViewHolder holder, int position) {
         Item item = pantryItemsFiltered.get(position);
         String name = item.itemName;
         Date date  = item.expirationDate;
-        long days = DateUtils.daysTillExpiration(context, date);
+        long days = DateUtils.daysTillExpiration(date);
         holder.itemName.setText(name);
         @SuppressLint("DefaultLocale") String expirationString = String.format("%s %d %s",
                 context.getString(R.string.product_expiry),
