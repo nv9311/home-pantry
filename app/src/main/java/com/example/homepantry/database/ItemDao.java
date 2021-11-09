@@ -29,14 +29,8 @@ public interface ItemDao {
     @Query("UPDATE items SET item_name = :itemName, barcode = :barcode, image = :image, expiration_date = :expirationDate WHERE itemId = :id")
     void update(int id, String itemName, String barcode, byte[] image, Date expirationDate);
 
-    @Delete
-    void delete(Item item);
-
     @Query("DELETE FROM items WHERE itemId = :id")
     void deleteItem(int id);
-
-    @Insert
-    void insertAll(Item... items);
 
     @Insert
     void insert(Item item);
