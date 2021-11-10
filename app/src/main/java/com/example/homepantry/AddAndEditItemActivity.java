@@ -61,7 +61,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
     public final static String PARAM_KEY = "param_result";
     private int itemId = -1;
 
-    ItemViewModel model;
+    PantryViewModel model;
     ActivityResultLauncher<Intent> changePhotoRegisterResult;
 
     @Override
@@ -78,7 +78,7 @@ public class AddAndEditItemActivity extends AppCompatActivity {
         mCalendar = Calendar.getInstance();
         dateEditText = findViewById(R.id.date);
 
-        model = new ViewModelProvider(this).get(ItemViewModel.class);
+        model = new ViewModelProvider(this).get(PantryViewModel.class);
         loadingIndicator.setVisibility(View.VISIBLE);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();

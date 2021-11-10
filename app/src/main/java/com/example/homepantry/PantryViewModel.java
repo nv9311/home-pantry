@@ -17,7 +17,7 @@ import com.example.homepantry.workers.NotificationWorker;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ItemViewModel extends AndroidViewModel {
+public class PantryViewModel extends AndroidViewModel {
     private LiveData<List<Item>> items;
     private MutableLiveData<Item> item;
     private WorkManager mWorkManager;
@@ -27,7 +27,7 @@ public class ItemViewModel extends AndroidViewModel {
     private final String UNIQUE_WORK_NAME = "NOTIFICATION_PERIODIC_WORK";
     private final String TAG_NOTIFICATION = "NOTIFICATION";
 
-    public ItemViewModel(Application application){
+    public PantryViewModel(Application application){
         super(application);
         this.application = application;
         items = AppDatabase.getDatabase(application).itemDao().getAll();

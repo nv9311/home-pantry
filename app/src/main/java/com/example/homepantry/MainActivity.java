@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
     PantryListAdapter pantryAdapter;
     AppDatabase db;
     ExecutorService executor;
-    ItemViewModel model;
+    PantryViewModel model;
     private ActivityResultLauncher<Intent> forResult;
     public static final String ITEM_KEY = "item_key";
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PantryListAdapter
         itemsRecyclerView.setHasFixedSize(true);
         itemsRecyclerView.setAdapter(pantryAdapter);
 
-        model = new ViewModelProvider(this).get(ItemViewModel.class);
+        model = new ViewModelProvider(this).get(PantryViewModel.class);
         final Observer<List<Item>> itemsObserver = new Observer<List<Item>>() {
             @Override
             public void onChanged(@Nullable final List<Item> items) {
